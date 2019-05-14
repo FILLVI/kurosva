@@ -1,0 +1,145 @@
+package com.fialk.dao;
+
+import com.fialk.Material;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class StoreDao {
+
+    public static final String STORE_TXT = "Store.txt";
+
+    public List<Material> readMaterialsFromStore() {
+        BufferedReader reader = null;
+        try {
+            File file = new File(STORE_TXT);
+            if (!file.exists()) {
+                file.createNewFile();
+                reader = new BufferedReader(new FileReader(file));
+            } else {
+                reader = new BufferedReader(new FileReader(STORE_TXT));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        List<Material> materials = new ArrayList<>();
+        String line;
+        try {
+            while ((line = reader.readLine()) != null) {
+                String[] res = line.split(",");
+                materials.add(new Material(Long.valueOf(res[0]), res[1], Integer.valueOf(res[2])));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return materials;
+    }
+
+    public void addMaterialToStore(Material material) {
+        List<Material> materials = readMaterialsFromStore();
+        FileWriter writer = getFileWriter();
+        materials.add(material);
+        try {
+            if (writer != null) {
+                for (Material mat : materials) {
+                    String str = getFormatToFile(mat);
+                    writer.write(str);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private String getFormatToFile(Material material) {
+        return String.format("%d,%s,%d%s", material.getId(), material.getName(), material.getValue(), "\n");
+    }
+
+
+    public void changeMaterialInStore(Material material) {
+        List<Material> materials = readMaterialsFromStore();
+        FileWriter writer = getFileWriter();
+        try {
+            if (writer != null) {
+                for (Material mat : materials) {
+                    String str = null;
+                    if (mat.getId() == material.getId()) {
+                        str = getFormatToFile(material);
+                    } else {
+                        str = getFormatToFile(mat);
+                    }
+                    writer.write(str);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void deleteMaterialFromStore(long id) {
+        List<Material> materials = readMaterialsFromStore();
+        FileWriter writer = getFileWriter();
+        try {
+            if (writer != null) {
+                for (Material mat : materials) {
+                    String row = null;
+                    if (mat.getId() != id) {
+                        row = getFormatToFile(mat);
+                        writer.write(row);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private FileWriter getFileWriter() {
+        FileWriter writer = null;
+        try {
+            File file = new File(STORE_TXT);
+            if (!file.exists()) {
+                file.createNewFile();
+                writer = new FileWriter(file);
+            } else {
+                writer = new FileWriter(STORE_TXT);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return writer;
+    }
+}
