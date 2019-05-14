@@ -1,0 +1,88 @@
+package com.fialk;
+
+import com.fialk.dao.StoreDao;
+import javax.swing.*;
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+
+
+        while (true) {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Enter your Action:");
+            System.out.println("1. Fetch 2.Add Materials 3. Delete Materials 4. Change Materials");
+            int action = scanner.nextInt();
+
+            switch (action) {
+                case 1:// fetch
+                    fetch();
+                    break;
+                case 2: // add
+                    fetch();
+                    add();
+                    break;
+                case 3: // delete
+                    fetch();
+                    delete();
+                    break;
+                case 4: //change
+                    fetch();
+                    change();
+                    break;
+                case 8:
+                   return;
+            }
+        }
+    }
+
+    private static void add() {
+        StoreDao dao = new StoreDao();// @classmethod StoreDao.add()
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter your count of materials in Store: ");
+        int count = scanner.nextInt();
+        System.out.println("Enter your materials in Store:");
+        for (int i = 0; i < count; i++) {
+            System.out.printf("Enter [%d] Id of your material in Store:%n", i);
+            long id = scanner.nextLong(); // if id is empty then create new maxId + 1
+            System.out.printf("Enter [%d] Name of your material in Store:%n", i);
+            String name = scanner.next();
+            System.out.printf("Enter [%d] Value of your material in Store:%n", i);
+            int value = scanner.nextInt();
+            dao.addMaterialToStore(new Material(id, name, value));
+        }
+    }
+
+    private static void fetch() {
+        for (Material material : new StoreDao().readMaterialsFromStore()) {
+            System.out.println(material.getId() + ", " + material.getName() + "," + material.getValue());
+        }
+    }
+
+    private static void delete() {
+        StoreDao dao = new StoreDao();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter your id of materials to delete from Store: ");
+        long id = scanner.nextLong();
+        dao.deleteMaterialFromStore(id);
+    }
+
+    private static void change() {
+        StoreDao dao = new StoreDao();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter your new count of materials in Store: ");
+        int count = scanner.nextInt();
+        System.out.println("Enter your new materials in Store:");
+        for (int i = 0; i < count; i++) {
+            System.out.printf("Enter [%d] new Id of your material in Store:%n", i);
+            long id = scanner.nextLong();
+            System.out.printf("Enter [%d] new Name of your material in Store:%n", i);
+            String name = scanner.next();
+            System.out.printf("Enter [%d] new Value of your material in Store:%n", i);
+            int value = scanner.nextInt();
+            dao.changeMaterialInStore(new Material(id, name, value));
+        }
+    }
+}
+
